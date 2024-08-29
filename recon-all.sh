@@ -1,6 +1,8 @@
 #! /bin/bash
 
 # Code to process recon-all
+export FREESURFER_HOME=/Applications/freesurfer/dev
+source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
 # Base directory structure
 base=/Users/neuero-239/Desktop/hcp
