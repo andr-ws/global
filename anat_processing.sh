@@ -10,7 +10,7 @@ read -p "Enter the base path of the dataset (e.g., ./path/2/data): " base
 global=./imaging/global
 
 # Base directory structure
-rawdata="${base}/raw_data"
+rawdata="${base}/rawdata"
 derivatives="${base}/derivatives"
 
 find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
