@@ -51,10 +51,10 @@ find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
   -d 3 \
   -f "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T1w_brain.nii.gz" \
   -m "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_brain.nii.gz" \
-  -o "${derivatives}/data/${sub}/anat/${sub}/${SUB}_desc-bias_cor_T2w_space-T1w_"
+  -o "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_space-T1w_"
 
   # Rename co-registered T2
-  mv "${derivatives}/data/${sub}/anat/${sub}/${SUB}_desc-bias_cor_T2w_space-T1w_Warped.nii.gz" \
-  "${derivatives}/data/${sub}/anat/${sub}/${SUB}_desc-bias_cor_T2w_space-T1w.nii.gz"
+  mv "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_space-T1w_Warped.nii.gz" \
+  "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_space-T1w.nii.gz"
   
 done # end participant loop
