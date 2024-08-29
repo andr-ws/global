@@ -50,7 +50,7 @@ find "${derivatives}/data" -type d -name 'sub-*' | sort -V | while read -r dir; 
 	-f "${anat}/${sub}_desc-bias_cor_T1w_brain.nii.gz" \
 	-m "${dwi}/eddy/${sub}_dwi_edc_b0_brain.nii.gz" \
 	-o "${xfm}/coreg/ANTs/${sub}_b0-T1w_" \
-	-t r 2>&1 | tee "${xfm}/coreg/ANTs/${sub}_desc-b0_T1w_ants_output.log"
+	-t r 2>&1 | tee "${xfm}/coreg/ANTs/${sub}_b0_T1w_ants_output.log"
 
 	# Check for the specific error in the log output
 	if grep -q "All samples map outside moving image buffer" "${xfm}/coreg/ANTs/${sub}_ants_output.log"; then
@@ -63,15 +63,15 @@ find "${derivatives}/data" -type d -name 'sub-*' | sort -V | while read -r dir; 
 		--epi="${dwi}/eddy/${sub}_dwi_edc_b0_brain.nii.gz" \
 		--t1="${anat}/${sub}_desc-bias_cor_T1w.nii.gz" \
 		--t1brain="${anat}/${sub}_desc-bias_cor_T1w_brain.nii.gz" \
-		--out="${xfm}/coreg/FSL/${sub}_desc-b0_T1w_affine"
+		--out="${xfm}/coreg/FSL/${sub}_b0_T1w_affine"
 				
 		# Convert the b0-T1w xfm (FSL to ANTs affine)
 		c3d_affine_tool \
 		-ref "${anat}/${sub}_desc-bias_cor_T1w_brain.nii.gz" \
 		-src "${dwi}/eddy/${sub}_dwi_edc_b0_brain.nii.gz" \
-		"${xfm}/coreg/FSL/${sub}_desc-b0_T1w_affine.mat" \
+		"${xfm}/coreg/FSL/${sub}_b0_T1w_affine.mat" \
 		-fsl2ras \
-		-oitk "${xfm}/coreg/ANTs/${sub}_desc-b0_T1w_0GenericAffine.mat"
+		-oitk "${xfm}/coreg/ANTs/${sub}_b0_T1w_0GenericAffine.mat"
 
 	else
 		echo "ANTs registration completed successfully. Skipping FLIRT-based fallback."
@@ -80,9 +80,9 @@ find "${derivatives}/data" -type d -name 'sub-*' | sort -V | while read -r dir; 
 		c3d_affine_tool \
 		-ref "${anat}/${sub}_desc-bias_cor_T1w_brain.nii.gz" \
 		-src "${dwi}/eddy/${sub}_dwi_edc_b0_brain.nii.gz" \
-		-itk "${xfm}/coreg/ANTs/${sub}_desc-b0-T1w_0GenericAffine.mat" \
+		-itk "${xfm}/coreg/ANTs/${sub}_b0-T1w_0GenericAffine.mat" \
 		-ras2fsl \
-		-o "${xfm}/coreg/FSL/${sub}_desc-b0_T1w_affine.mat"
+		-o "${xfm}/coreg/FSL/${sub}_b0_T1w_affine.mat"
 	fi
 
 	# T1w-05mm warp
@@ -90,26 +90,26 @@ find "${derivatives}/data" -type d -name 'sub-*' | sort -V | while read -r dir; 
 	-d 3 \
 	-f "${global}/mni/MNI152_T1_05mm_brain.nii.gz" \
 	-m "${anat}/${sub}_desc-bias_cor_T1w_brain.nii.gz" \
-	-o "${xfm}/norm/ANTs/${sub}_desc-T1w-MNI05mm_"
+	-o "${xfm}/norm/ANTs/${sub}_T1w-MNI05mm_"
 
 	# ANTs to FSL (warps)
 	wb_command \
 	-convert-warpfield -from-itk \
-	"${xfm}/norm/ANTs/${sub}_desc-T1w_MNI05mm_1Warp.nii.gz" \
+	"${xfm}/norm/ANTs/${sub}_T1w_MNI05mm_1Warp.nii.gz" \
 	-to-fnirt \
-	"${xfm}/norm/FSL/${sub}_desc-T1w_MNI05mm_warp.nii.gz" \
+	"${xfm}/norm/FSL/${sub}_T1w_MNI05mm_warp.nii.gz" \
 	"${global}/mni/MNI152_T1_05mm_brain.nii.gz"
 
 	# Compose xfms (b0-T1w-05mm; FSL affine + warp)
 	convertwarp \
 	--ref="${global}/mni/MNI152_T1_05mm_brain.nii.gz" \
-	--premat="${xfm}/coreg/FSL/${sub}_desc-b0_T1w_affine.mat" \
-	--warp1="${xfm}/norm/FSL/${sub}_desc-T1w_MNI05mm_warp.nii.gz" \
-	--out="${xfm}/norm/FSL/${sub}_desc-b0_T1w_MNI05mm_affwarp.nii.gz"
+	--premat="${xfm}/coreg/FSL/${sub}_b0_T1w_affine.mat" \
+	--warp1="${xfm}/norm/FSL/${sub}_T1w_MNI05mm_warp.nii.gz" \
+	--out="${xfm}/norm/FSL/${sub}_b0_T1w_MNI05mm_affwarp.nii.gz"
 
 	# Generate inverse (05mm-T1w-b0; FSL affine + warp)
 	invwarp \
 	--ref="${dwi}/eddy/${sub}_dwi_edc_b0_brain.nii.gz" \
-	--warp="${xfm}/norm/FSL/${sub}_desc-b0_T1w_MNI05mm_affwarp.nii.gz" \
-	--out="${xfm}/norm/FSL/${sub}_desc-MNI05mm_T1w_b0_affwarp.nii.gz"
+	--warp="${xfm}/norm/FSL/${sub}_b0_T1w_MNI05mm_affwarp.nii.gz" \
+	--out="${xfm}/norm/FSL/${sub}_MNI05mm_T1w_b0_affwarp.nii.gz"
 done
