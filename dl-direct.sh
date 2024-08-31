@@ -2,6 +2,9 @@
 
 # Code to perform DL-DiReCT
 
+base=./imaging/datasets ... etc
+derivatives=${base}/derivatives
+
 # Variables 
 dl_env_name="DL_DiReCT"
 install_dir="${HOME}/DL-DiReCT"
@@ -21,7 +24,8 @@ function dir_exists() {
 # Function to install required dependencies 
 function install_requirements() { 
 	echo "Installing requirements..." 
-	# Check if the conda environment exists 
+	
+ 	# Check if the conda environment exists 
 	if ! conda_env_exists "${dl_env_name}"; then 
 		echo "Creating conda environment: ${dl_env_name}" 
 		conda create -y -n "${dl_env_name}" python=3.10 || { echo "Failed to create conda environment."; exit 1; }
@@ -29,15 +33,19 @@ function install_requirements() {
 		echo "Conda environment ${dl_env_name} already exists. Skipping creation." 
 	fi
 
-	# Activate the environment source activate "${dl_env_name}" 
+	# Activate the environment 
+ 	source activate "${dl_env_name}" 
+  
 	# Check if the directory already exists 
 	if ! dir_exists "${install_dir}"; then 
-		echo "Cloning the repository..." git clone "$REPO_URL" "${install_dir}" || { echo "Failed to clone repository."; exit 1; } 
+		echo "Cloning the repository..." 
+  		git clone "$REPO_URL" "${install_dir}" || { echo "Failed to clone repository."; exit 1; } 
 	else 
 		echo "Directory ${install_dir} already exists. Skipping clone."
 	fi 
 
-	# Mark setup as done touch "${first_run}" 
+	# Mark setup as done 
+ 	touch "${first_run}" 
 } 
 
 # Main script
@@ -48,8 +56,7 @@ else
 fi
 
 
-base
-derivatives=${base}/derivatives
+
 
 # DL-DiReCT requirements
 #conda create -y -n DL_DiReCT python=3.10
