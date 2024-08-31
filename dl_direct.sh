@@ -1,11 +1,6 @@
 #! /bin/bash 
 
-# Code to perform DL-DiReCT
-
-base=./imaging/datasets ... etc
-derivatives=${base}/derivatives
-
-# Variables 
+# Setup variables 
 dl_env_name="DL_DiReCT"
 install_dir="${HOME}/DL-DiReCT"
 repo_url="https://github.com/SCAN-NRAD/DL-DiReCT.git"
@@ -44,7 +39,7 @@ function install_requirements() {
 		echo "Directory ${install_dir} already exists. Skipping clone."
 	fi 
 
-	# Mark setup as done 
+	# Mark setup as done (initialises file on the first run)
  	touch "${first_run}" 
 } 
 
@@ -55,28 +50,25 @@ else
 	echo "Requirements already installed. Skipping setup." 
 fi
 
+# Code to execute DL-DiReCT
 
-
-
-# DL-DiReCT requirements
-#conda create -y -n DL_DiReCT python=3.10
-#source activate DL_DiReCT
-#cd ${HOME}
-#git clone https://github.com/SCAN-NRAD/DL-DiReCT.git
-cd DL-DiReCT
-pip install numpy && pip install -e .
-
+# Prompt the base path
+read -p "Enter the base path of the dataset (e.g., ./path/2/data): " base
+derivatives=${base}/derivatives
 
 # Point to the minimally pre-processed brain extracted T1w MRI here!
+find "${derivatives}/data" -type d -name 'sub-*' | sort -V | while read -r dir; do
+	
+ 	# extract subject-id and create directory
+	sub=$(basename "${dir}")
 
-for DIR in ${MORPHDIR}s*
-do
-	SUB=${basename ${DIR}
-	mkdir -p ${DLDIR}${SUB}
+	t1="${derivatives}/data/${sub}/anat/${sub}_desc-min_proc_T1w_brain.nii.gz"
+	dl_out="${derivatives}/dl_direct/${sub}"
+	mkdir -p "${dl_out}"
 
 	dl+direct \
-		--subject ${SUB} \
-		--bet ${DIR}/T1p.nii.gz \ # point to biasfieldcorrected?
-		${DLDIR}${SUB} \
+		--subject "${sub}" \
+		--bet ${t1} \
+		${dl_out} \
 		--model v6
 done
