@@ -2,6 +2,9 @@
 
 # Shell script for MIST segementation using T1w and T2w images
 
+# NEED TO SET FLAGS FOR RESAMPLING (RESAMPLE BIAS_COR) AND SITE-SPECIFIC RUNS
+# WHERE SHOULD THIS INFORMATION BE STORED/OBTAINED FROM?
+
 base=./Users/neuro-239/Desktop/HCP
 rawdata=${base}/rawdata
 derivatives=${base}/derivatives
