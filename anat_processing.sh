@@ -1,21 +1,19 @@
-#!bin/bash
+#!/bin/bash
 
-# Raw T1w/T2w handling, minimal pre-processing (reorientation, neck crop and brain extraction)
+# Raw T1w/T2w handling, minimal pre-processing (reorientation, neck crop, and brain extraction)
 # Co-registration of T1w/T2w images
 
 # Prompt the base path
 read -p "Enter the base path of the dataset (e.g., ./path/2/data): " base
 
-# Contains cross-purposes files (i.e., MNI spaces)
+# Contains cross-purpose files (e.g., MNI spaces)
 global=./imaging/global
 
 # Base directory structure
 rawdata="${base}/rawdata"
 derivatives="${base}/derivatives"
 
-# Add a flag here: --resample to resample both T1 and T2w MRI to 1mm isotropic
-
-# Parse optional resampling arg
+# Parse optional resampling argument
 resample=false
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -25,7 +23,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
-  # extract subject-id and create directory
+  # Extract subject-id and create directory
   sub=$(basename "${dir}")
   mkdir -p "${derivatives}/data/${sub}/anat"
 
@@ -47,20 +45,20 @@ find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
 
     # Resample if specified
     if [ "$resample" = true ]; then
-    	echo "Resampling ${sub} to 1mm isotropic..."
-	flirt \
-	-in "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz" \
-    	-ref "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz" 
-    	-applyisoxfm 1.0 \
-    	-nosearch \
-    	-out "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_iso_1mm_${modality}.nii.gz"
+        echo "Resampling ${sub} to 1mm isotropic..."
+        flirt \
+        -in "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz" \
+        -ref "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz" \
+        -applyisoxfm 1.0 \
+        -nosearch \
+        -out "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_iso_1mm_${modality}.nii.gz"
 
-     	# Use the resampled image for further processing
-      	modality_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_iso_1mm_${modality}.nii.gz"
-     else
-       	# Use the non-resampled image for further processing
-	modality_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz"
-     fi 
+        # Use the resampled image for further processing
+        modality_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_iso_1mm_${modality}.nii.gz"
+    else
+        # Use the non-resampled image for further processing
+        modality_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz"
+    fi
     
     echo "Brain extracting ${sub}..."
     mri_synthstrip \
@@ -93,5 +91,3 @@ find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
   mv "${coreg_out}Warped.nii.gz" "${coreg_out}.nii.gz"
   
 done # end participant loop
-
-
