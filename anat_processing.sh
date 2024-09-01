@@ -3,6 +3,12 @@
 # Raw T1w/T2w handling, minimal pre-processing (reorientation, neck crop, and brain extraction)
 # Co-registration of T1w/T2w images
 
+
+# instead of prompting the base of the path, I imagine running the code like this:
+# bash this_script.sh path/2/dataset (where this is assigned as variable base) --resample=true (or =false)
+# but resampling must be assigned as true or false to commence the script!
+
+
 # Prompt the base path
 read -p "Enter the base path of the dataset (e.g., ./path/2/data): " base
 
