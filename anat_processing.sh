@@ -3,30 +3,41 @@
 # Raw T1w/T2w handling, minimal pre-processing (reorientation, neck crop, and brain extraction)
 # Co-registration of T1w/T2w images
 
+# Ensure the script is run with at least one argument
+if [ "$#" -eq 0 ]; then
+    echo "Usage: bash $0 <path/to/dataset> [--resample=true|false]"
+    exit 1
+fi
 
-# instead of prompting the base of the path, I imagine running the code like this:
-# bash this_script.sh path/2/dataset (where this is assigned as variable base) --resample=true (or =false)
-# but resampling must be assigned as true or false to commence the script!
+# Base path of the dataset
+base=$1
 
+# Validate base path
+if [ ! -d "$base" ]; then
+    echo "Error: The provided base path does not exist."
+    exit 1
+fi
 
-# Prompt the base path
-read -p "Enter the base path of the dataset (e.g., ./path/2/data): " base
+# Optional resampling argument
+resample=false
+for arg in "$@"; do
+    case $arg in
+        --resample=*)
+            resample="${arg#*=}"
+            ;;
+    esac
+done
 
-# Contains cross-purpose files (e.g., MNI spaces)
-global=./imaging/global
+# Validate resample argument
+if [ "$resample" != "true" ] && [ "$resample" != "false" ]; then
+    echo "Error: --resample must be 'true' or 'false'."
+    exit 1
+fi
 
-# Base directory structure
+# Define directories
+global="./imaging/global"
 rawdata="${base}/rawdata"
 derivatives="${base}/derivatives"
-
-# Parse optional resampling argument
-resample=false
-while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        --resample) resample=true ;;
-    esac
-    shift
-done
 
 find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
   # Extract subject-id and create directory
