@@ -59,6 +59,22 @@ find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
     -d 3 \
     -i "${derivatives}/data/${sub}/anat/${sub}_desc-min_proc_${modality}.nii.gz" \
     -o "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz"
+  done
+
+  for image in min_proc bias_cor; do
+    # Co-register T2w to T1w MRI
+    echo "Co-registering T2w to T1w for ${sub}..."
+    antsRegistrationSyNQuick.sh \
+    -d 3 \
+    -f "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T1w.nii.gz" \
+    -m "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T2w.nii.gz" \
+    -o "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T2w_space-T1w"
+
+    mv "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T2w_space-T1wWarped.nii.gz" \
+    "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T2w_space-T1w.nii.gz"
+  done
+
+  for image in min_proc bias_cor 
 
     # Resample if specified
     if [ "$resample" = true ]; then
@@ -96,15 +112,9 @@ find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
     coreg_out="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_space-T1w"
   fi
 
-  # Co-register T2w to T1w MRI
-  echo "Co-registering T2w to T1w for ${sub}..."
-  antsRegistrationSyNQuick.sh \
-  -d 3 \
-  -f "${t1_image}" \
-  -m "${t2_image}" \
-  -o "${coreg_out}"
+
 
   # Rename co-registered T2w
-  mv "${coreg_out}Warped.nii.gz" "${coreg_out}.nii.gz"
+  
   
 done # end participant loop
