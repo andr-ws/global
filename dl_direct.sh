@@ -56,7 +56,7 @@ fi
 read -p "Enter the base path of the dataset (e.g., ./path/2/data): " base
 derivatives=${base}/derivatives
 
-# Point to the minimally pre-processed brain extracted T1w MRI here!
+# Point to the minimally pre-processed resampled brain extracted T1w MRI here!
 find "${derivatives}/data" -type d -name 'sub-*' | sort -V | while read -r dir; do
 	
  	# extract subject-id and create directory
