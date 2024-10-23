@@ -1,4 +1,4 @@
-#! /bin/bash 
+#!/bin/bash 
 
 # Setup variables 
 dl_env_name="DL_DiReCT"
