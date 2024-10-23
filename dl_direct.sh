@@ -62,7 +62,7 @@ find "${derivatives}/data" -type d -name 'sub-*' | sort -V | while read -r dir; 
  	# extract subject-id and create directory
 	sub=$(basename "${dir}")
 
-	t1="${derivatives}/data/${sub}/anat/${sub}_desc-min_proc_T1w_brain.nii.gz"
+	t1="${derivatives}/data/${sub}/anat/${sub}_desc-res-1mm_bfc_T1w_brain.nii.gz"
 	dl_out="${derivatives}/dl_direct/${sub}"
 	mkdir -p "${dl_out}"
 
