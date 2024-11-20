@@ -14,7 +14,7 @@
 # Runs bedpostX_gpu on eddy-corrected data
 
 # Requirements
-module load apps/fsl/ version xyz
+module load apps/fsl/6.0.7.9
 
 # Code start
 sb0dir=/mnt/data1/users/a9ws/synb0_ppmi
