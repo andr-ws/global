@@ -26,16 +26,16 @@ subject_path=${subjects[$SLURM_ARRAY_TASK_ID - 1]}
 sub=$(basename "${subject_path}")
 
 mkdir ${subject_path}/eddy
-bet ${subject_path}/OUTPUTS/b0_all_topup ${subject_path}/eddy/b0_topup_brain -m 
+bet ${subject_path}/synb0/OUTPUTS/b0_all_topup ${subject_path}/eddy/b0_topup_brain -m 
 
 eddy \
---imain=${subject_path}/INPUTS/${sub}_dwi.nii.gz \
+--imain=${subject_path}/synb0/INPUTS/${sub}_dwi.nii.gz \
 --mask=${subject_path}/eddy/b0_topup_brain_mask \
---acqp=${subject_path}/INPUTS/acqparams.txt \
---index=${subject_path}/INPUTS/index.txt \
---bvecs=${subject_path}/INPUTS/${sub}_dwi.bvec \
---bvals=${subject_path}/INPUTS/${sub}_dwi.bval \
---topup=${subject_path}/OUTPUTS/topup \
+--acqp=${subject_path}/synb0/INPUTS/acqparams.txt \
+--index=${subject_path}/synb0/INPUTS/index.txt \
+--bvecs=${subject_path}/synb0/INPUTS/${sub}_dwi.bvec \
+--bvals=${subject_path}/synb0/INPUTS/${sub}_dwi.bval \
+--topup=${subject_path}/synb0/OUTPUTS/topup \
 --out=${subject_path}/eddy/${sub}_dwi_edc \
 --nthr=8 \
 --repol
