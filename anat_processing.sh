@@ -35,7 +35,7 @@ if [ "$resample" != "true" ] && [ "$resample" != "false" ]; then
 fi
 
 # Define directories
-global="./imaging/global"
+global="~/imaging/global"
 rawdata="${base}/rawdata"
 derivatives="${base}/derivatives"
 
@@ -111,10 +111,4 @@ find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
     t2_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_brain.nii.gz"
     coreg_out="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_space-T1w"
   fi
-
-
-
-  # Rename co-registered T2w
-  
-  
 done # end participant loop
