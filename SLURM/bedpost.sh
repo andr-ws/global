@@ -24,7 +24,7 @@ for dir in ${sb0dir}/sub-*; do
   mkdir ${dir}/bedpostx
 
   # Populate required files
-  cp ${dir}/INPUTS/${sub}_dwi.bval ${dir}/bedpostx/bvals
+  cp ${dir}/synb0/INPUTS/${sub}_dwi.bval ${dir}/bedpostx/bvals
   cp ${dir}/eddy/${sub}_dwi_edc.eddy_rotated_bvecs ${dir}/bedpostx/bvecs
   cp ${dir}/eddy/${sub}_dwi_edc.nii.gz ${dir}/bedpostx/data.nii.gz
   cp ${dir}/eddy/b0_topup_brain_mask.nii.gz ${dir}/bedpostx/nodif_brain_mask.nii.gz
