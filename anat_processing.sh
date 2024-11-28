@@ -42,23 +42,23 @@ derivatives="${base}/derivatives"
 find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
   # Extract subject-id and create directory
   sub=$(basename "${dir}")
-  mkdir -p "${derivatives}/data/${sub}/anat"
+  mkdir -p "${derivatives}/anat/${sub}/proc"
 
   for modality in T1w T2w; do
     echo "Reorienting and cropping ${sub}..."
     fslreorient2std \
     "${rawdata}/${sub}/anat/${sub}_${modality}.nii.gz" \
-    "${derivatives}/data/${sub}/anat/${sub}_desc-min_proc_${modality}.nii.gz"
+    "${derivatives}/anat/${sub}/proc/${sub}_desc-min_proc_${modality}.nii.gz"
 	
     robustfov \
-    -i "${derivatives}/data/${sub}/anat/${sub}_desc-min_proc_${modality}.nii.gz" \
-    -r "${derivatives}/data/${sub}/anat/${sub}_desc-min_proc_${modality}.nii.gz"
+    -i "${derivatives}/anat/${sub}/proc/${sub}_desc-min_proc_${modality}.nii.gz" \
+    -r "${derivatives}/anat/${sub}/proc/${sub}_desc-min_proc_${modality}.nii.gz"
 
     echo "Biasfield correcting ${sub}..."
     N4BiasFieldCorrection \
     -d 3 \
-    -i "${derivatives}/data/${sub}/anat/${sub}_desc-min_proc_${modality}.nii.gz" \
-    -o "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz"
+    -i "${derivatives}/anat/${sub}/proc/${sub}_desc-min_proc_${modality}.nii.gz" \
+    -o "${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_${modality}.nii.gz"
   done
 
   for image in min_proc bias_cor; do
@@ -66,12 +66,12 @@ find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
     echo "Co-registering T2w to T1w for ${sub}..."
     antsRegistrationSyNQuick.sh \
     -d 3 \
-    -f "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T1w.nii.gz" \
-    -m "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T2w.nii.gz" \
-    -o "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T2w_space-T1w"
+    -f "${derivatives}/anat/${sub}/proc/${sub}_desc-${image}_T1w.nii.gz" \
+    -m "${derivatives}/anat/${sub}/proc/${sub}_desc-${image}_T2w.nii.gz" \
+    -o "${derivatives}/anat/${sub}/proc/${sub}_desc-${image}_T2w_space-T1w"
 
-    mv "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T2w_space-T1wWarped.nii.gz" \
-    "${derivatives}/data/${sub}/anat/${sub}_desc-${image}_T2w_space-T1w.nii.gz"
+    mv "${derivatives}/anat/${sub}/proc/${sub}_desc-${image}_T2w_space-T1wWarped.nii.gz" \
+    "${derivatives}/anat/${sub}/proc/${sub}_desc-${image}_T2w_space-T1w.nii.gz"
   done
 
   for image in min_proc bias_cor 
@@ -80,17 +80,17 @@ find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
     if [ "$resample" = true ]; then
         echo "Resampling ${sub} to 1mm isotropic..."
         flirt \
-        -in "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz" \
-        -ref "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz" \
+        -in "${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_${modality}.nii.gz" \
+        -ref "${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_${modality}.nii.gz" \
         -applyisoxfm 1.0 \
         -nosearch \
-        -out "${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_iso_1mm_${modality}.nii.gz"
+        -out "${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_iso_1mm_${modality}.nii.gz"
 
         # Use the resampled image for further processing
-        modality_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_iso_1mm_${modality}.nii.gz"
+        modality_image="${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_iso_1mm_${modality}.nii.gz"
     else
         # Use the non-resampled image for further processing
-        modality_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_${modality}.nii.gz"
+        modality_image="${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_${modality}.nii.gz"
     fi
     
     echo "Brain extracting ${sub}..."
@@ -103,12 +103,12 @@ find "${rawdata}" -type d -name 'sub-*' | sort -V | while read -r dir; do
 
   # Determine the correct filenames for co-registration
   if [ "$resample" = true ]; then
-    t1_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_iso_1mm_T1w_brain.nii.gz"
-    t2_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_iso_1mm_T2w_brain.nii.gz"
-    coreg_out="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_space-T1w_iso_1mm"
+    t1_image="${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_iso_1mm_T1w_brain.nii.gz"
+    t2_image="${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_iso_1mm_T2w_brain.nii.gz"
+    coreg_out="${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_T2w_space-T1w_iso_1mm"
   else
-    t1_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T1w_brain.nii.gz"
-    t2_image="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_brain.nii.gz"
-    coreg_out="${derivatives}/data/${sub}/anat/${sub}_desc-bias_cor_T2w_space-T1w"
+    t1_image="${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_T1w_brain.nii.gz"
+    t2_image="${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_T2w_brain.nii.gz"
+    coreg_out="${derivatives}/anat/${sub}/proc/${sub}_desc-bias_cor_T2w_space-T1w"
   fi
 done # end participant loop
