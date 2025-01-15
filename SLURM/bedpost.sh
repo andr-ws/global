@@ -1,12 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name=bpx
-#SBATCH -p gpu
+#!/bin/bash
+#SBATCH --job-name=bedpostx
+#SBATCH --partition=gpu
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:1
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=6
-#SBATCH --mem=16GB
-#SBATCH --time=4:00:00
+#SBATCH --mem=32GB
+#SBATCH --time=06:00:00
 #SBATCH --mail-type=END
 #SBATCH --mail-user=luke.andrews@liverpool.ac.uk
 
